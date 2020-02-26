@@ -15,6 +15,11 @@ npm run serve
 npm run build
 ```
 
+### Runs the compiled production version
+```
+npm run start
+```
+
 ### Lints and fixes files
 ```
 npm run lint

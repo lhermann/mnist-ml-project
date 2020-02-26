@@ -16,6 +16,9 @@
   "main": "index.js",
   "dependencies": {
     "@tensorflow/tfjs": "^1.5.2",
+    "@tensorflow/tfjs-vis": "^1.4.0",
+    "bootstrap": "^4.4.1",
+    "bootstrap-vue": "^2.5.0",
     "core-js": "^3.6.4",
     "http-server": "^0.12.1",
     "vue": "^2.6.11"
