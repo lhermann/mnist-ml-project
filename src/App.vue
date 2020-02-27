@@ -1,24 +1,24 @@
 <template>
   <div id="app">
-    <div class="d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center justify-content-between mb-3">
       <h1 class="mb-0">Machine Learning with the MNIST Data Set</h1>
       <b-button variant="outline-secondary" size="sm" @click="toggleVisor">Toggle Sidebar</b-button>
     </div>
 
     <b-card class="mb-4" title="1: Initialize Model">
       <div>
-        <b-form-group label="Machine Learning Model">
-          <strong>Convoluted</strong>
+        <b-form-group label="Choose your Machine Learning Model">
+          <strong>Convolutional Neural Networks</strong>
           <b-form-radio v-model="selectedModel" name="ml-model" value="tutorial">The Tutorial (2 conv. layers + 2 downsamplings)</b-form-radio>
           <b-form-radio v-model="selectedModel" name="ml-model" value="direct">The Direct (1 conv. layers + 1 downsampling)</b-form-radio>
           <b-form-radio v-model="selectedModel" name="ml-model" value="complex">The Complex (3 conv. layers)</b-form-radio>
           <b-form-radio v-model="selectedModel" name="ml-model" value="simple">The Simple (2 downsamplings + 1 conv. layers)</b-form-radio>
-          <strong>Flat</strong>
-          <b-form-radio v-model="selectedModel" name="ml-model" value="huge">The Huge (no downsampling + 2 flat dense layers)</b-form-radio>
-          <b-form-radio v-model="selectedModel" name="ml-model" value="large">The Large (1 downsampling + 2 flat dense layers)</b-form-radio>
-          <b-form-radio v-model="selectedModel" name="ml-model" value="modest">The Modest (no downsampling + 1 flat dense layers)</b-form-radio>
-          <b-form-radio v-model="selectedModel" name="ml-model" value="small">The Small (1 downsampling + 1 flat dense layers)</b-form-radio>
-          <b-form-radio v-model="selectedModel" name="ml-model" value="tiny">The Tiny (2 downsamplings + 1 flat dense layers)</b-form-radio>
+          <strong>Dense Neural Networks</strong>
+          <b-form-radio v-model="selectedModel" name="ml-model" value="huge">The Huge (no downsampling + 2 dense layers)</b-form-radio>
+          <b-form-radio v-model="selectedModel" name="ml-model" value="large">The Large (1 downsampling + 2 dense layers)</b-form-radio>
+          <b-form-radio v-model="selectedModel" name="ml-model" value="modest">The Modest (no downsampling + 1 dense layers)</b-form-radio>
+          <b-form-radio v-model="selectedModel" name="ml-model" value="small">The Small (1 downsampling + 1 dense layers)</b-form-radio>
+          <b-form-radio v-model="selectedModel" name="ml-model" value="tiny">The Tiny (2 downsamplings + 1 dense layers)</b-form-radio>
         </b-form-group>
       </div>
       <b-alert :show="modelSummary" variant="secondary">
@@ -166,12 +166,13 @@
         <b-alert v-if="errors.predict" class="mt-3" variant="danger" show>{{ errors.predict }}</b-alert>
       </template>
     </b-card>
+
+    <p class="text-muted">A tool by <a href="https://tentmaker.dev/" target="_blank">Lukas Hermann</a></p>
   </div>
 </template>
 
 <script>
 import MnistData from './utils/MnistData.js';
-import showExamples from './utils/showExamples.js';
 import Model from './utils/Model.js';
 import Analyzer from './utils/Analyzer.js';
 
