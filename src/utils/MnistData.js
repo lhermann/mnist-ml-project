@@ -140,4 +140,21 @@ export default class MnistData {
 
     return {xs, labels};
   }
+
+  async renderExampleImages (htmlElement, count = 8) {
+    const tensors = data.nextTestBatch(count)
+    htmlElement.innerHTML = '';
+    return Promise.all(
+      [...Array(count).keys()].map(async (item, index) => {
+        const tensor = tf.tidy(() => tensors.xs.slice([index, 0], [1, tensors.xs.shape[1]]))
+        const canvas = document.createElement('canvas');
+        canvas.width = 28;
+        canvas.height = 28;
+        canvas.style = 'margin: 4px;';
+        await tf.browser.toPixels(tensor.reshape([28, 28, 1]), canvas)
+        htmlElement.appendChild(canvas);
+        return tensor
+      })
+    )
+  }
 }

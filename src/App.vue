@@ -1,18 +1,26 @@
 <template>
   <div id="app">
-    <b-card class="mb-4" title="1: Load Data">
-      <template v-slot:footer>
-        <div class="d-flex align-items-center justify-content-between">
-          <b-button variant="primary" :disabled="steps.loadData !== false" @click="loadData">
-            Load Data
-          </b-button>
-          <b-spinner v-show="steps.loadData === 'pending'" variant="success"></b-spinner>
-          <b-icon v-show="steps.loadData === 'done'" icon="check" variant="success" font-scale="2"/>
-        </div>
-      </template>
-    </b-card>
+    <div class="d-flex align-items-center justify-content-between">
+      <h1 class="mb-0">Machine Learning with the MNIST Data Set</h1>
+      <b-button variant="outline-secondary" size="sm" @click="toggleVisor">Toggle Sidebar</b-button>
+    </div>
 
-    <b-card class="mb-4" title="2: Initialize Model">
+    <b-card class="mb-4" title="1: Initialize Model">
+      <div>
+        <b-form-group label="Machine Learning Model">
+          <strong>Convoluted</strong>
+          <b-form-radio v-model="selectedModel" name="ml-model" value="tutorial">The Tutorial (2 conv. layers + 2 downsamplings)</b-form-radio>
+          <b-form-radio v-model="selectedModel" name="ml-model" value="direct">The Direct (1 conv. layers + 1 downsampling)</b-form-radio>
+          <b-form-radio v-model="selectedModel" name="ml-model" value="complex">The Complex (3 conv. layers)</b-form-radio>
+          <b-form-radio v-model="selectedModel" name="ml-model" value="simple">The Simple (2 downsamplings + 1 conv. layers)</b-form-radio>
+          <strong>Flat</strong>
+          <b-form-radio v-model="selectedModel" name="ml-model" value="huge">The Huge (no downsampling + 2 flat dense layers)</b-form-radio>
+          <b-form-radio v-model="selectedModel" name="ml-model" value="large">The Large (1 downsampling + 2 flat dense layers)</b-form-radio>
+          <b-form-radio v-model="selectedModel" name="ml-model" value="modest">The Modest (no downsampling + 1 flat dense layers)</b-form-radio>
+          <b-form-radio v-model="selectedModel" name="ml-model" value="small">The Small (1 downsampling + 1 flat dense layers)</b-form-radio>
+          <b-form-radio v-model="selectedModel" name="ml-model" value="tiny">The Tiny (2 downsamplings + 1 flat dense layers)</b-form-radio>
+        </b-form-group>
+      </div>
       <b-alert :show="modelSummary" variant="secondary">
         <code>
           <pre>{{ modelSummary }}</pre>
@@ -22,7 +30,7 @@
         <div class="d-flex align-items-center justify-content-between">
           <b-button
             variant="primary"
-            :disabled="steps.loadData !== 'done'"
+            :disabled="steps.trainModel === 'done'"
             @click="initModel"
           >
             Initialize Model
@@ -30,39 +38,86 @@
           <b-spinner v-show="steps.initModel === 'pending'" variant="success"></b-spinner>
           <b-icon v-show="steps.initModel === 'done'" icon="check" variant="success" font-scale="2"/>
         </div>
+        <b-alert v-if="errors.initModel" class="mt-3" variant="danger" show>{{ errors.initModel }}</b-alert>
       </template>
     </b-card>
 
-    <b-card class="mb-4" title="3: Teach Model">
+    <b-card class="mb-4" title="2: Load Data">
+      <div class="text-muted">Load in all image and label data sets from MNIST</div>
+
+      <div ref="loadDataExamples"></div>
+
+      <template v-slot:footer>
+        <div class="d-flex align-items-center justify-content-between">
+          <b-button variant="primary" :disabled="steps.loadData === 'done'" @click="loadData">
+            Load Data
+          </b-button>
+          <b-spinner v-show="steps.loadData === 'pending'" variant="success"></b-spinner>
+          <b-icon v-show="steps.loadData === 'done'" icon="check" variant="success" font-scale="2"/>
+        </div>
+        <b-alert v-if="errors.loadData" class="mt-3" variant="danger" show>{{ errors.loadData }}</b-alert>
+      </template>
+    </b-card>
+
+    <b-card class="mb-4" title="3: Train Model">
+      <b-row>
+        <b-col cols="6">
+          <b-form-group label="Batch Size">
+            <b-form-input v-model="train.batchSize" number type="number" />
+          </b-form-group>
+        </b-col>
+        <b-col cols="6">
+          <b-form-group label="Epochs">
+            <b-form-input v-model="train.epochs" number type="number" />
+          </b-form-group>
+        </b-col>
+        <b-col cols="6">
+          <b-form-group label="Train Data Size">
+            <b-form-input v-model="train.trainDataSize" number type="number" />
+          </b-form-group>
+        </b-col>
+        <b-col cols="6">
+          <b-form-group label="Test Data Size">
+            <b-form-input v-model="train.testDataSize" number type="number" />
+          </b-form-group>
+        </b-col>
+      </b-row>
       <div>
-        <b-form-group label="Batch Size">
-          <b-form-input v-model="train.batchSize" number type="number" />
-        </b-form-group>
-        <b-form-group label="Train Data Size">
-          <b-form-input v-model="train.trainDataSize" number type="number" />
-        </b-form-group>
-        <b-form-group label="Test Data Size">
-          <b-form-input v-model="train.testDataSize" number type="number" />
-        </b-form-group>
       </div>
 
       <template v-slot:footer>
         <div class="d-flex align-items-center justify-content-between">
-          <b-button
-            variant="primary"
-            :disabled="steps.loadData !== 'done'"
-            @click="teachModel"
-          >
-            Teach Model
-          </b-button>
-          <b-icon v-show="steps.teachModel === 'pending'" icon="arrow-clockwise" variant="success" font-scale="2"></b-icon>
-          <b-icon v-show="steps.teachModel === 'done'" icon="check" variant="success" font-scale="2"/>
+          <div>
+            <b-button
+              variant="primary"
+              :disabled="steps.loadData !== 'done'"
+              @click="trainModel"
+            >
+              Train Model
+            </b-button>
+            &nbsp;
+            <b-button
+              variant="outline-primary"
+              :disabled="steps.loadData !== 'done'"
+              @click="trainModel({ background: true })"
+            >
+              Train in background
+            </b-button>
+          </div>
+          <b-spinner v-show="steps.trainModel === 'pending'" variant="success"></b-spinner>
+          <b-icon v-show="steps.trainModel === 'done'" icon="check" variant="success" font-scale="2"/>
         </div>
-        <b-alert v-if="errors.teachModel" class="mt-3" variant="danger" show>{{ errors.teachModel }}</b-alert>
+        <b-alert v-if="errors.trainModel" class="mt-3" variant="danger" show>{{ errors.trainModel }}</b-alert>
       </template>
     </b-card>
 
     <b-card class="mb-4" title="4: Analyze Model">
+      <p>
+        <span>Accuracy: </span>
+        <strong v-if="accuracy">{{ accuracy | percent }}%</strong>
+        <span v-else>&mdash; data not yet analyzed &mdash;</span>
+      </p>
+
       <template v-slot:footer>
         <div class="d-flex align-items-center justify-content-between">
           <b-button
@@ -75,6 +130,7 @@
           <b-spinner v-show="steps.analyze === 'pending'" variant="success"></b-spinner>
           <b-icon v-show="steps.analyze === 'done'" icon="check" variant="success" font-scale="2"/>
         </div>
+        <b-alert v-if="errors.analyze" class="mt-3" variant="danger" show>{{ errors.analyze }}</b-alert>
       </template>
     </b-card>
 
@@ -128,60 +184,86 @@ export default {
   data () {
     return {
       errors: {
-        teachModel: null,
+        initModel: null,
+        loadData: null,
+        trainModel: null,
+        analyze: null,
         predict: null,
       },
       steps: {
         loadData: false,
         initModel: false,
-        teachModel: false,
+        trainModel: false,
         analyze: false,
         predict: false,
       },
+      selectedModel: 'tutorial',
       modelSummary: null,
       train: {
-        batchSize: 128,
-        trainDataSize: 1000,
-        testDataSize: 200,
+        batchSize: 500,
+        epochs: 20,
+        trainDataSize: 10000,
+        testDataSize: 2000,
       },
+      accuracy: null,
       exampleTensors: [],
       predictionResult: null,
+      tfvisVisor: null
     }
   },
   mounted () {
     window.data = data
     window.model = model
     window.analyzer = analyzer
-    tfvis.visor()
+    this.tfvisVisor = tfvis.visor()
   },
   methods: {
-    async loadData () {
-      this.steps.loadData = 'pending'
-      await data.load();
-      await showExamples(tfvis, data);
-      this.prepareExampleTensors()
-      this.steps.loadData = 'done'
-    },
     async initModel () {
       this.steps.initModel = 'pending'
-      model.initModel('default')
-      this.modelSummary = model.getSummary()
+      this.errors.initModel = null
+      try {
+        model.initModel(this.selectedModel)
+        this.modelSummary = model.getSummary()
+      } catch (e) {
+        this.errors.initModel = e
+      }
       this.steps.initModel = 'done'
     },
-    async teachModel () {
-      this.steps.teachModel = 'pending'
-      this.errors.teachModel = null
+    async loadData () {
+      this.steps.loadData = 'pending'
+      this.errors.loadData = null
       try {
-        await model.train(this.train.batchSize, this.train.trainDataSize, this.train.testDataSize);
-      } catch (error) {
-        this.errors.teachModel = error
+        await data.load();
+        await data.renderExampleImages(this.$refs.loadDataExamples, 38)
+        this.prepareExampleTensors()
+      } catch (e) {
+        this.errors.loadData = e
       }
-      this.steps.teachModel = 'done'
+      this.steps.loadData = 'done'
+    },
+    async trainModel ({ background }) {
+      this.steps.trainModel = 'pending'
+      this.errors.trainModel = null
+      try {
+        await model.train(this.train.batchSize, this.train.epochs, this.train.trainDataSize, this.train.testDataSize, background);
+      } catch (error) {
+        this.errors.trainModel = error
+      }
+      this.steps.trainModel = 'done'
     },
     async analyze () {
       this.steps.analyze = 'pending'
-      await analyzer.showAccuracy();
-      await analyzer.showConfusion();
+      this.errors.analyze = null
+      try {
+        const [predictions, labels] = model.doPrediction(1000)
+        await analyzer.showAccuracy(predictions, labels);
+        await analyzer.showConfusion(predictions, labels);
+        this.accuracy = await tfvis.metrics.accuracy(labels, predictions);
+        predictions.dispose();
+        labels.dispose();
+      } catch (e) {
+        this.errors.analyze = e
+      }
       this.steps.analyze = 'done'
     },
     async predict (tensor) {
@@ -195,22 +277,11 @@ export default {
       this.steps.predict = 'done'
     },
     async prepareExampleTensors () {
-      const COUNT = 12
-      const tensors = data.nextTestBatch(COUNT)
-      this.$refs.exampleCanvasHolder.innerHTML = '';
-      this.exampleTensors = await Promise.all(
-        [...Array(COUNT).keys()].map(async (item, index) => {
-          const tensor = tf.tidy(() => tensors.xs.slice([index, 0], [1, tensors.xs.shape[1]]))
-          const canvas = document.createElement('canvas');
-          canvas.width = 28;
-          canvas.height = 28;
-          canvas.style = 'margin: 4px;';
-          await tf.browser.toPixels(tensor.reshape([28, 28, 1]), canvas)
-          this.$refs.exampleCanvasHolder.appendChild(canvas);
-          return tensor
-        })
-      )
+      this.exampleTensors = await data.renderExampleImages(this.$refs.exampleCanvasHolder, 12)
     },
+    toggleVisor () {
+      this.tfvisVisor.toggle()
+    }
   }
 }
 </script>

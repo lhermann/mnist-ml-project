@@ -6,22 +6,15 @@ export default class Analyzer {
     this.model = model;
   }
 
-  async showAccuracy() {
-    const [preds, labels] = this.model.doPrediction();
+  async showAccuracy(preds, labels) {
     const classAccuracy = await this.tfvis.metrics.perClassAccuracy(labels, preds);
     const container = {name: 'Accuracy', tab: 'Evaluation'};
     this.tfvis.show.perClassAccuracy(container, classAccuracy, CLASS_NAMES);
-
-    labels.dispose();
   }
 
-  async showConfusion() {
-    const [preds, labels] = this.model.doPrediction();
+  async showConfusion(preds, labels) {
     const confusionMatrix = await this.tfvis.metrics.confusionMatrix(labels, preds);
     const container = {name: 'Confusion Matrix', tab: 'Evaluation'};
-    this.tfvis.render.confusionMatrix(
-        container, {values: confusionMatrix}, CLASS_NAMES);
-
-    labels.dispose();
+    this.tfvis.render.confusionMatrix(container, {values: confusionMatrix}, CLASS_NAMES);
   }
 }
