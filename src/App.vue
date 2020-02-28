@@ -212,11 +212,29 @@ export default {
       tfvisVisor: null
     }
   },
+  watch: {
+    selectedModel (value) {
+      this.setUrlParam('selectedModel', value)
+    },
+    train: {
+      handler (obj) {
+        for (const key in obj) {
+          this.setUrlParam(key, obj[key])
+        }
+      },
+      deep: true
+    }
+  },
   mounted () {
     window.data = data
     window.model = model
     window.analyzer = analyzer
     this.tfvisVisor = tfvis.visor()
+    this.selectedModel = this.getUrlParam('selectedModel') || this.selectedModel
+    this.train.batchSize = this.getUrlParam('batchSize') || this.train.batchSize
+    this.train.epochs = this.getUrlParam('epochs') || this.train.epochs
+    this.train.trainDataSize = this.getUrlParam('trainDataSize') || this.train.trainDataSize
+    this.train.testDataSize = this.getUrlParam('testDataSize') || this.train.testDataSize
   },
   methods: {
     async initModel () {
@@ -282,6 +300,17 @@ export default {
     },
     toggleVisor () {
       this.tfvisVisor.toggle()
+    },
+    setUrlParam (key, value) {
+      if (history.pushState) {
+        const url = new URL(window.location.href)
+        url.searchParams.set(key, value)
+        window.history.pushState(null, null, url.href)
+      }
+    },
+    getUrlParam (key) {
+      const url = new URL(window.location.href)
+      return url.searchParams.get(key)
     }
   }
 }
