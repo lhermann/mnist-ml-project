@@ -264,7 +264,13 @@ export default {
       this.steps.trainModel = 'pending'
       this.errors.trainModel = null
       try {
-        await model.train(this.train.batchSize, this.train.epochs, this.train.trainDataSize, this.train.testDataSize, background);
+        await model.train(
+          parseInt(this.train.batchSize),
+          parseInt(this.train.epochs),
+          parseInt(this.train.trainDataSize),
+          parseInt(this.train.testDataSize),
+          background
+        );
       } catch (error) {
         this.errors.trainModel = error
       }
