@@ -82,13 +82,13 @@
           </b-form-group>
         </b-col>
         <b-col cols="6">
-          <b-form-group label="Train Data Size">
+          <b-form-group label="Training Data Size">
             <b-form-input v-model="train.trainDataSize" number type="number" />
           </b-form-group>
         </b-col>
         <b-col cols="6">
-          <b-form-group label="Test Data Size">
-            <b-form-input v-model="train.testDataSize" number type="number" />
+          <b-form-group label="Validation Data Size">
+            <b-form-input v-model="train.valDataSize" number type="number" />
           </b-form-group>
         </b-col>
       </b-row>
@@ -212,9 +212,9 @@ export default {
       modelSummary: null,
       train: {
         batchSize: 500,
-        epochs: 20,
+        epochs: 10,
         trainDataSize: 10000,
-        testDataSize: 2000,
+        valDataSize: 2000,
       },
       accuracy: null,
       exampleTensors: [],
@@ -244,7 +244,7 @@ export default {
     this.train.batchSize = this.getUrlParam('batchSize') || this.train.batchSize
     this.train.epochs = this.getUrlParam('epochs') || this.train.epochs
     this.train.trainDataSize = this.getUrlParam('trainDataSize') || this.train.trainDataSize
-    this.train.testDataSize = this.getUrlParam('testDataSize') || this.train.testDataSize
+    this.train.valDataSize = this.getUrlParam('valDataSize') || this.train.valDataSize
   },
   methods: {
     async initModel () {
@@ -284,7 +284,7 @@ export default {
           parseInt(this.train.batchSize),
           parseInt(this.train.epochs),
           parseInt(this.train.trainDataSize),
-          parseInt(this.train.testDataSize),
+          parseInt(this.train.valDataSize),
           background
         );
       } catch (error) {
