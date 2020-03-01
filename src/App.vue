@@ -122,6 +122,8 @@
     </b-card>
 
     <b-card class="mb-4" title="4: Analyze Model">
+      <p class="text-muted">Analyze the model with 1000 images from the validation set. A class accuracy table and confusion matrix are generated in the sidebar.</p>
+
       <p>
         <span>Accuracy: </span>
         <strong v-if="accuracy">{{ accuracy | percent }}%</strong>
