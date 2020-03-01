@@ -37,6 +37,11 @@ export default class Model {
     this.tfvis.show.modelSummary({name: 'Model Architecture', tab: 'Architecture'}, this.model);
   }
 
+  resetModel () {
+    // reset model
+    this.model = this.tf.sequential();
+  }
+
   getSummary () {
     let str = ''
     this.model.summary(undefined, undefined, line => str += line + "\n")

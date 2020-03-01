@@ -28,13 +28,23 @@
       </b-alert>
       <template v-slot:footer>
         <div class="d-flex align-items-center justify-content-between">
-          <b-button
-            variant="primary"
-            :disabled="steps.trainModel === 'done'"
-            @click="initModel"
-          >
-            Initialize Model
-          </b-button>
+          <div>
+            <b-button
+              variant="primary"
+              :disabled="steps.trainModel === 'done'"
+              @click="initModel"
+            >
+              Initialize Model
+            </b-button>
+            &nbsp;
+            <b-button
+              variant="outline-secondary"
+              :disabled="steps.trainModel !== 'done'"
+              @click="resetModel"
+            >
+              Reset Model
+            </b-button>
+          </div>
           <b-spinner v-show="steps.initModel === 'pending'" variant="success"></b-spinner>
           <b-icon v-show="steps.initModel === 'done'" icon="check" variant="success" font-scale="2"/>
         </div>
@@ -247,6 +257,12 @@ export default {
         this.errors.initModel = e
       }
       this.steps.initModel = 'done'
+    },
+    resetModel () {
+      model.resetModel()
+      this.steps.initModel = false
+      this.steps.trainModel = false
+      this.modelSummary = ''
     },
     async loadData () {
       this.steps.loadData = 'pending'
