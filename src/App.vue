@@ -346,7 +346,7 @@ body {
 }
 #app {
   padding: 2rem;
-  max-width: 800px;
+  max-width: 750px;
 }
 .btn.disabled,
 .btn:disabled {
